@@ -7,9 +7,7 @@ int* replaceElements(int* arr, int arrSize, int* returnSize) {
     int largest = -1;
     for (int i = arrSize - 1; i >= 0; i--) {
         result[i] = largest;
-        if (arr[i] > largest) {
-            largest = arr[i];
-        }
+        if (arr[i] > largest) largest = arr[i];
     }
     return result;
 }
