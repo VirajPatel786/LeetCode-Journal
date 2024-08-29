@@ -1,40 +1,55 @@
+from typing import List
+
 class Solution:
     def removeStones(self, stones: List[List[int]]) -> int:
-        # Union-Find (Disjoint Set Union) with path compression and union by rank
-        parent = {}
-        rank = {}
-
-        # Find function with path compression
-        def find(x):
-            if parent[x] != x:
-                parent[x] = find(parent[x])
-            return parent[x]
-
-        # Union function with union by rank
-        def union(x, y):
-            rootX = find(x)
-            rootY = find(y)
-            if rootX != rootY:
-                if rank[rootX] > rank[rootY]:
-                    parent[rootY] = rootX
-                elif rank[rootX] < rank[rootY]:
-                    parent[rootX] = rootY
-                else:
-                    parent[rootY] = rootX
-                    rank[rootX] += 1
-
-        # Add each stone to the union-find structure
-        for x, y in stones:
-            if x not in parent:
-                parent[x] = x
-                rank[x] = 0
-            if y + 100000 not in parent:  # Offset y to distinguish rows and columns
-                parent[y + 100000] = y + 100000
-                rank[y + 100000] = 0
-            union(x, y + 100000)
-
-        # Count the number of unique components
-        root_set = {find(x) for x, y in stones}
-        # The maximum number of stones that can be removed is the total number of stones
-        # minus the number of unique components
-        return len(stones) - len(root_set)
+        num_stones = len(stones)
+        # rank[i] will hold the rank (size) of the set containing stone i
+        rank = [1] * num_stones
+        # parent[i] will hold the parent of stone i in the union-find structure
+        parent = [i for i in range(num_stones)]
+        
+        # Find the root parent of the stone with path compression
+        def find(stone_index):
+            while stone_index != parent[stone_index]:
+                # Path compression: point the stone directly to its grandparent
+                parent[stone_index] = parent[parent[stone_index]]
+                stone_index = parent[stone_index]
+            return stone_index
+        
+        # Union two stones' sets if they are not already connected
+        def union(stone1_index, stone2_index):
+            root1 = find(stone1_index)
+            root2 = find(stone2_index)
+            
+            # If both stones are already in the same set, no need to union
+            if root1 == root2:
+                return 0
+            
+            # Union by rank: attach the smaller tree under the larger tree
+            if rank[root1] < rank[root2]:
+                root1, root2 = root2, root1  # Swap to ensure root1 is always larger
+            parent[root2] = root1
+            rank[root1] += rank[root2]
+            return 1
+        
+        # Maps to track the latest stone seen in each row and column
+        row_to_stone = {}
+        col_to_stone = {}
+        stones_removed = 0
+        
+        # Process each stone
+        for i, (row, col) in enumerate(stones):
+            # If there is already a stone in the same row, union the current stone with it
+            if row in row_to_stone:
+                stones_removed += union(i, row_to_stone[row])
+            else:
+                row_to_stone[row] = i
+            
+            # If there is already a stone in the same column, union the current stone with it
+            if col in col_to_stone:
+                stones_removed += union(i, col_to_stone[col])
+            else:
+                col_to_stone[col] = i
+        
+        # The number of stones that can be removed is equal to the number of unions performed
+        return stones_removed
