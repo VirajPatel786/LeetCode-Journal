@@ -23,6 +23,14 @@ The repository is organized as follows:
 
 Feel free to browse through the solutions, clone the repo, and try out the problems yourself. If you find any improvements or alternative approaches, contributions are welcome!
 
+## Viewing Code and LeetCode Stats
+
+To see the time and memory stats that LeetCode provides after submitting a solution, you can view the code in the "Blame" view and hover over the commit history. This will show you the details of the performance metrics.
+
+Here's an example:
+
+![Example of LeetCode Stats](![image](https://github.com/user-attachments/assets/c88e9159-27d5-40a4-a3db-8faf177c7a6d))
+
 ## Contributions
 
 If you would like to contribute or suggest improvements, please open an issue or submit a pull request. Constructive feedback is always appreciated!
