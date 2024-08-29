@@ -10,11 +10,13 @@ struct ListNode* reverseList(struct ListNode* head) {
     struct ListNode *prev = NULL;
     // Initialize current pointer to the head of the list
     struct ListNode *current = head;
+    // Initialize next pointer to NULL
+    struct ListNode* nextNode = NULL;
 
     // Traverse the list
     while (current != NULL) {
         // Store the next node before changing the link
-        struct ListNode* nextNode = current->next;
+         nextNode = current->next;
         // Reverse the current node's pointer to point to the previous node
         current->next = prev;
         // Move the previous pointer forward to the current node
