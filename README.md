@@ -25,11 +25,11 @@ Feel free to browse through the solutions, clone the repo, and try out the probl
 
 ## Viewing Code and LeetCode Stats
 
-To see the time and memory stats that LeetCode provides after submitting a solution, you can view the code in the "Blame" view and hover over the commit history. This will show you the details of the performance metrics.
+To view the time and memory statistics provided by LeetCode after submitting a solution, navigate to the 'Blame' view of the file. By hovering over the commit history, you can see detailed performance metrics associated with each submission.
 
 Here's an example:
 
-![Example of LeetCode Stats](https://github.com/user-attachments/assets/c88e9159-27d5-40a4-a3db-8faf177c7a6d)  
+![Example of LeetCode Stats](https://github.com/user-attachments/assets/c88e9159-27d5-40a4-a3db-8faf177c7a6d)
 
 ## Contributions
 
