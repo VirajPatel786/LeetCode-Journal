@@ -29,7 +29,7 @@ To see the time and memory stats that LeetCode provides after submitting a solut
 
 Here's an example:
 
-![Example of LeetCode Stats](![image](https://github.com/user-attachments/assets/c88e9159-27d5-40a4-a3db-8faf177c7a6d))
+![Example of LeetCode Stats](https://github.com/user-attachments/assets/c88e9159-27d5-40a4-a3db-8faf177c7a6d)  
 
 ## Contributions
 
