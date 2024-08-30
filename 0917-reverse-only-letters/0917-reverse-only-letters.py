@@ -1,20 +1,19 @@
 class Solution:
     def reverseOnlyLetters(self, s: str) -> str:
-        revS = []
-        start, end = 0, len(s) - 1
+        # Collect all letters in the string
+        letters = [c for c in s if c.isalpha()]
         
-        while start < len(s):
-            if not s[start].isalpha():
-                # If the character at 'start' is not a letter, add it to result and move start pointer
-                revS.append(s[start])
-                start += 1
-            elif not s[end].isalpha():
-                # If the character at 'end' is not a letter, move end pointer to the left
-                end -= 1
+        # Create a result list to hold the final characters
+        result = []
+        
+        # Iterate through the original string
+        for c in s:
+            # If the character is a letter, pop from the end of the letters list
+            if c.isalpha():
+                result.append(letters.pop())
             else:
-                # If both characters are letters, add the letter at 'end' to the result
-                revS.append(s[end])
-                start += 1
-                end -= 1
+                # If it's not a letter, just add it to the result as is
+                result.append(c)
         
-        return ''.join(revS)
+        # Join the list into a final string and return
+        return ''.join(result)
