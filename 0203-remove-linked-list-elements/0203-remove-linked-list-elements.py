@@ -6,8 +6,7 @@
 class Solution:
     def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
         # Initialize a dummy node to handle edge cases easily
-        dummy = ListNode(0)
-        dummy.next = head
+        dummy = ListNode(0, head)
         
         current = dummy
         
