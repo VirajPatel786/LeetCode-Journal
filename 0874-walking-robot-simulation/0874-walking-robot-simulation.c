@@ -1,110 +1,76 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
 
-#define HASH_SIZE 100003  // A large prime number for the hash table size
-
-// Structure to represent a node in the hash table
-typedef struct HashNode {
+// Define a hash set to store obstacles (using a simple hash function)
+typedef struct {
     int x, y;
-    struct HashNode* next;
-} HashNode;
+} Obstacle;
 
-// Hash function to generate a unique key based on (x, y) coordinates
-int hashFunction(int x, int y) {
-    return (x * 31 + y) % HASH_SIZE;
+// A hash function to map the obstacle coordinates to a unique key
+int hash(int x, int y) {
+    return (x + 30000) * 60001 + (y + 30000);
 }
 
-// Insert an obstacle into the hash table
-void insertObstacle(HashNode** hashTable, int x, int y) {
-    int hashIndex = hashFunction(x, y);
-    HashNode* newNode = (HashNode*)malloc(sizeof(HashNode));
-    newNode->x = x;
-    newNode->y = y;
-    newNode->next = hashTable[hashIndex];
-    hashTable[hashIndex] = newNode;
+// Comparator for sorting obstacles
+int compare(const void* a, const void* b) {
+    Obstacle* oa = (Obstacle*)a;
+    Obstacle* ob = (Obstacle*)b;
+    if (oa->x == ob->x)
+        return oa->y - ob->y;
+    return oa->x - ob->x;
 }
 
-// Check if a position (x, y) is an obstacle
-bool isObstacle(HashNode** hashTable, int x, int y) {
-    int hashIndex = hashFunction(x, y);
-    HashNode* current = hashTable[hashIndex];
-    while (current != NULL) {
-        if (current->x == x && current->y == y) {
-            return true;
-        }
-        current = current->next;
-    }
-    return false;
-}
-
-// Free the memory allocated for the hash table
-void freeHashTable(HashNode** hashTable) {
-    for (int i = 0; i < HASH_SIZE; i++) {
-        HashNode* current = hashTable[i];
-        while (current != NULL) {
-            HashNode* temp = current;
-            current = current->next;
-            free(temp);
-        }
-    }
+// Binary search function to check if a given position is an obstacle
+int isObstacle(Obstacle* obstacles, int obstaclesSize, int x, int y) {
+    Obstacle target = {x, y};
+    return bsearch(&target, obstacles, obstaclesSize, sizeof(Obstacle), compare) != NULL;
 }
 
 int robotSim(int* commands, int commandsSize, int** obstacles, int obstaclesSize, int* obstaclesColSize) {
-    // Directions: north, east, south, west in terms of (dx, dy) pairs
-    int directions[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};  // north, east, south, west
-    int direction_idx = 0;  // Start facing north
+    // Directions: N, E, S, W
+    int dirX[4] = {0, 1, 0, -1};  // Corresponding x moves for each direction
+    int dirY[4] = {1, 0, -1, 0};  // Corresponding y moves for each direction
 
-    // Initialize the hash table to store obstacles
-    HashNode* hashTable[HASH_SIZE] = {NULL};
-
-    // Insert all obstacles into the hash table
+    // Convert obstacles into an array of Obstacle structures
+    Obstacle* obsArray = (Obstacle*)malloc(obstaclesSize * sizeof(Obstacle));
     for (int i = 0; i < obstaclesSize; i++) {
-        insertObstacle(hashTable, obstacles[i][0], obstacles[i][1]);
+        obsArray[i].x = obstacles[i][0];
+        obsArray[i].y = obstacles[i][1];
     }
+    // Sort the obstacles for binary search use later
+    qsort(obsArray, obstaclesSize, sizeof(Obstacle), compare);
 
-    // Starting coordinates of the robot
-    int x = 0, y = 0;
-    
-    // To track the maximum distance squared from the origin
-    int max_distance_sq = 0;
+    // Starting position and direction (facing north)
+    int x = 0, y = 0, dir = 0;
+    int maxDistSq = 0;
 
-    // Process each command
+    // Simulate each command
     for (int i = 0; i < commandsSize; i++) {
-        int command = commands[i];
-
-        if (command == -2) {  // Turn left 90 degrees
-            direction_idx = (direction_idx + 3) % 4;  // Equivalent to (direction_idx - 1) % 4
-        } else if (command == -1) {  // Turn right 90 degrees
-            direction_idx = (direction_idx + 1) % 4;
-        } else {  // Move forward command steps
-            for (int step = 0; step < command; step++) {
-                // Calculate the next position
-                int next_x = x + directions[direction_idx][0];
-                int next_y = y + directions[direction_idx][1];
-
-                // If the next position is an obstacle, stop moving
-                if (isObstacle(hashTable, next_x, next_y)) {
+        if (commands[i] == -2) {  // Turn left
+            dir = (dir + 3) % 4;
+        } else if (commands[i] == -1) {  // Turn right
+            dir = (dir + 1) % 4;
+        } else {  // Move forward
+            int steps = commands[i];
+            for (int j = 0; j < steps; j++) {
+                int nextX = x + dirX[dir];
+                int nextY = y + dirY[dir];
+                if (!isObstacle(obsArray, obstaclesSize, nextX, nextY)) {
+                    x = nextX;
+                    y = nextY;
+                    // Calculate distance squared from origin
+                    int distSq = x * x + y * y;
+                    if (distSq > maxDistSq) {
+                        maxDistSq = distSq;
+                    }
+                } else {
+                    // Stop if there's an obstacle
                     break;
-                }
-
-                // Otherwise, update the robot's position
-                x = next_x;
-                y = next_y;
-
-                // Calculate and update the maximum distance squared from the origin
-                int distance_sq = x * x + y * y;
-                if (distance_sq > max_distance_sq) {
-                    max_distance_sq = distance_sq;
                 }
             }
         }
     }
 
-    // Free the hash table memory
-    freeHashTable(hashTable);
-
-    // Return the maximum distance squared
-    return max_distance_sq;
+    free(obsArray);
+    return maxDistSq;
 }
