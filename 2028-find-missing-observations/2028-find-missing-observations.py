@@ -2,25 +2,22 @@ from typing import List
 
 class Solution:
     def missingRolls(self, rolls: List[int], mean: int, n: int) -> List[int]:
-        # Calculate the remaining sum needed for the missing rolls
-        remaining_sum = (mean * (len(rolls) + n)) - sum(rolls)
+        # Calculate the sum of the missing rolls
+        missing_sum = (mean * (len(rolls) + n)) - sum(rolls)
         
-        # If the remaining sum is invalid, return an empty list
-        if remaining_sum < n or remaining_sum > 6 * n:
-            return []
+        # Check if it's possible to distribute the missing_sum among n rolls
+        if ((missing_sum < n) or (missing_sum > (6 * n))):
+            return list()
         
-        # Initialize the result with all 1's
-        result = [1] * n
-        # We pre-filled n ones, so subtract that from the remaining sum
-        remaining_sum -= n
+        # Calculate the base value and extra rolls
+        base_value, extra_rolls = divmod(missing_sum, n)
         
-        # Distribute the remaining sum across the rolls
-        i = 0
-        while remaining_sum > 0:
-            # Increment the current roll, but don't exceed 6
-            increment = min(remaining_sum, 6 - result[i])
-            result[i] += increment
-            remaining_sum -= increment
-            i += 1
+        # Construct the result list
+        result = []
+        for i in range(n):
+            if i < extra_rolls:
+                result.append(base_value + 1)  # Add 1 to handle the remainder
+            else:
+                result.append(base_value)      # Assign the base value
         
         return result
