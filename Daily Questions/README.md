@@ -26,3 +26,5 @@ Tackle one problem each day, using the solutions provided as a reference if need
 ## Contributions
 
 If you have suggestions for alternative solutions, additional explanations, or other improvements, contributions are welcome! Please open a pull request to share your ideas. Collaborative learning is encouraged to help everyone improve their coding skills.
+
+Happy coding!
