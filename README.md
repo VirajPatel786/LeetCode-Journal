@@ -38,3 +38,5 @@ If you would like to contribute or suggest improvements, please open an issue or
 ## License
 
 This repository is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+Happy coding!
