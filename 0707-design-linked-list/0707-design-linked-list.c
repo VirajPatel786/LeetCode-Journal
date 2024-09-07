@@ -8,77 +8,92 @@ typedef struct Node {
 } Node;
 
 typedef struct {
-    Node* head;    // Pointer to the head node
-    Node* tail;    // Pointer to the tail node for efficiency in tail operations
-    int length;    // Length of the linked list
+    Node* head;    // Dummy head node
+    Node* tail;    // Dummy tail node
+    int length;    // Length of the linked list (excluding dummy nodes)
 } MyLinkedList;
 
-// Function to create a new linked list
+// Helper function to create a new node
+Node* createNode(int val) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    if (node == NULL) {
+        fprintf(stderr, "Node Memory Allocation Failed");
+        return NULL;
+    }
+    node->val = val;
+    node->prev = NULL;
+    node->next = NULL;
+    return node;
+}
+
+// Function to create a new linked list with dummy nodes
 MyLinkedList* myLinkedListCreate() {
     MyLinkedList* list = (MyLinkedList*)malloc(sizeof(MyLinkedList));
     if (list == NULL) {
         fprintf(stderr, "Linked List Memory Allocation Failed");
         return NULL;
     }
-    list->head = NULL;  // Initialize head and tail to NULL
-    list->tail = NULL;
-    list->length = 0;
+    // Initialize dummy nodes
+    list->head = createNode(-1);  // Dummy head node with arbitrary value
+    list->tail = createNode(-1);  // Dummy tail node with arbitrary value
+
+    if (list->head == NULL || list->tail == NULL) {
+        free(list);
+        return NULL;
+    }
+
+    // Link the dummy nodes to each other
+    list->head->next = list->tail;
+    list->tail->prev = list->head;
+
+    list->length = 0;  // Initialize length to 0
     return list;
 }
 
-// Function to get the value at the given index
+// Function to get the value at the given index (0-based)
 int myLinkedListGet(MyLinkedList* obj, int index) {
     if (index < 0 || index >= obj->length) {
-        return -1;  // Return -1 if the index is invalid
+        return -1;  // Return -1 for an invalid index
     }
-    Node* currentNode = obj->head;
+    
+    Node* currentNode = obj->head->next;  // Start from the first real node (after the dummy head)
     for (int i = 0; i < index; i++) {
         currentNode = currentNode->next;
     }
     return currentNode->val;
 }
 
-// Function to add a node with value `val` at the head
+// Function to add a node with value `val` at the head (index 0)
 void myLinkedListAddAtHead(MyLinkedList* obj, int val) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
-    if (newNode == NULL) {
-        fprintf(stderr, "Node Memory Allocation Failed");
-        return;
-    }
-    newNode->val = val;
-    newNode->next = obj->head;  // New node points to the current head
-    newNode->prev = NULL;       // Since it's the head, prev is NULL
+    Node* newNode = createNode(val);
+    if (newNode == NULL) return;
 
-    if (obj->head != NULL) {
-        obj->head->prev = newNode;  // Set the current head's prev to the new node
-    }
+    Node* firstRealNode = obj->head->next;  // The first real node after the dummy head
+
+    // Insert newNode between the head dummy and the first real node
+    newNode->next = firstRealNode;
+    newNode->prev = obj->head;
     
-    obj->head = newNode;  // Update the head to be the new node
-    if (obj->tail == NULL) {
-        obj->tail = newNode;  // If the list was empty, the new node is also the tail
-    }
+    obj->head->next = newNode;
+    firstRealNode->prev = newNode;
+
     obj->length++;
 }
 
 // Function to add a node with value `val` at the tail
 void myLinkedListAddAtTail(MyLinkedList* obj, int val) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
-    if (newNode == NULL) {
-        fprintf(stderr, "Node Memory Allocation Failed");
-        return;
-    }
-    newNode->val = val;
-    newNode->next = NULL;  // Since it's the tail, next is NULL
-    newNode->prev = obj->tail;  // New node's prev points to the current tail
+    Node* newNode = createNode(val);
+    if (newNode == NULL) return;
 
-    if (obj->tail != NULL) {
-        obj->tail->next = newNode;  // Update current tail's next to the new node
-    }
+    Node* lastRealNode = obj->tail->prev;  // The last real node before the dummy tail
+
+    // Insert newNode between the last real node and the tail dummy
+    newNode->next = obj->tail;
+    newNode->prev = lastRealNode;
     
-    obj->tail = newNode;  // Update the tail to be the new node
-    if (obj->head == NULL) {
-        obj->head = newNode;  // If the list was empty, the new node is also the head
-    }
+    lastRealNode->next = newNode;
+    obj->tail->prev = newNode;
+
     obj->length++;
 }
 
@@ -87,31 +102,27 @@ void myLinkedListAddAtIndex(MyLinkedList* obj, int index, int val) {
     if (index < 0 || index > obj->length) {
         return;  // Invalid index
     }
+
     if (index == 0) {
-        myLinkedListAddAtHead(obj, val);  // Insert at the head
+        myLinkedListAddAtHead(obj, val);  // Insert at head
     } else if (index == obj->length) {
-        myLinkedListAddAtTail(obj, val);  // Insert at the tail
+        myLinkedListAddAtTail(obj, val);  // Insert at tail
     } else {
-        Node* newNode = (Node*)malloc(sizeof(Node));
-        if (newNode == NULL) {
-            fprintf(stderr, "Node Memory Allocation Failed");
-            return;
-        }
-        newNode->val = val;
-        
-        Node* currentNode = obj->head;
+        Node* newNode = createNode(val);
+        if (newNode == NULL) return;
+
+        Node* currentNode = obj->head->next;  // Start from the first real node
         for (int i = 0; i < index - 1; i++) {
-            currentNode = currentNode->next;  // Traverse to the node before the index
+            currentNode = currentNode->next;
         }
+
+        // Insert newNode between currentNode and currentNode->next
+        newNode->next = currentNode->next;
+        newNode->prev = currentNode;
         
-        newNode->next = currentNode->next;  // New node points to the node currently at index
-        newNode->prev = currentNode;        // New node's prev points to the current node
-        
-        if (currentNode->next != NULL) {
-            currentNode->next->prev = newNode;  // Update the next node's prev pointer
-        }
-        currentNode->next = newNode;  // Link the current node to the new node
-        
+        currentNode->next->prev = newNode;
+        currentNode->next = newNode;
+
         obj->length++;
     }
 }
@@ -121,39 +132,21 @@ void myLinkedListDeleteAtIndex(MyLinkedList* obj, int index) {
     if (index < 0 || index >= obj->length) {
         return;  // Invalid index
     }
-    
-    Node* currentNode = obj->head;
-    if (index == 0) {
-        // Deleting the head
-        obj->head = currentNode->next;
-        if (obj->head != NULL) {
-            obj->head->prev = NULL;  // Set the new head's prev to NULL
-        } else {
-            obj->tail = NULL;  // List becomes empty, so tail should be NULL
-        }
-        free(currentNode);
-    } else {
-        for (int i = 0; i < index; i++) {
-            currentNode = currentNode->next;  // Traverse to the node at the index
-        }
-        
-        if (currentNode->prev != NULL) {
-            currentNode->prev->next = currentNode->next;  // Update previous node's next pointer
-        }
-        
-        if (currentNode->next != NULL) {
-            currentNode->next->prev = currentNode->prev;  // Update next node's prev pointer
-        } else {
-            obj->tail = currentNode->prev;  // Update tail if we are deleting the last node
-        }
-        
-        free(currentNode);
+
+    Node* currentNode = obj->head->next;  // Start from the first real node
+    for (int i = 0; i < index; i++) {
+        currentNode = currentNode->next;
     }
-    
+
+    // Update the previous and next pointers to remove the currentNode
+    currentNode->prev->next = currentNode->next;
+    currentNode->next->prev = currentNode->prev;
+
+    free(currentNode);  // Free the memory of the deleted node
     obj->length--;
 }
 
-// Function to free the linked list and its nodes
+// Function to free the entire linked list, including dummy nodes
 void myLinkedListFree(MyLinkedList* obj) {
     Node* currentNode = obj->head;
     while (currentNode != NULL) {
