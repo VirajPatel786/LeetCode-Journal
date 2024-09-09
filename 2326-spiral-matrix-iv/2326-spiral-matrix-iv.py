@@ -8,33 +8,42 @@ class Solution:
         # Initialize the matrix with -1 values
         result = [[-1 for _ in range(n)] for _ in range(m)]
         
-        # Directions: right (0,1), down (1,0), left (0,-1), up (-1,0)
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-        
-        # Initial position and direction (starting at the top-left corner)
-        i, j, d = 0, 0, 0  # (row, column, direction index)
+        # Boundaries for the spiral traversal
+        top, bottom, left, right = 0, m - 1, 0, n - 1
         
         # Pointer to traverse the linked list
         current = head
+        
+        # Continue filling the matrix while there are elements in the linked list and space in the matrix
+        while current and top <= bottom and left <= right:
+            # Fill the top row (left to right)
+            for j in range(left, right + 1):
+                if current:
+                    result[top][j] = current.val
+                    current = current.next
+            top += 1  # Move the top boundary down
 
-        # We'll fill m * n cells (each cell of the matrix)
-        for _ in range(m * n):
-            # Fill current position with the linked list value or -1 if list is exhausted
-            if current:
-                result[i][j] = current.val
-                current = current.next
-            else:
-                result[i][j] = -1  # If the linked list ends, we put -1
+            # Fill the right column (top to bottom)
+            for i in range(top, bottom + 1):
+                if current:
+                    result[i][right] = current.val
+                    current = current.next
+            right -= 1  # Move the right boundary left
 
-            # Determine the next cell position
-            ni, nj = i + directions[d][0], j + directions[d][1]
-            
-            # Check if the next position is within bounds and not yet filled
-            if 0 <= ni < m and 0 <= nj < n and result[ni][nj] == -1:
-                i, j = ni, nj  # Move to the next valid position
-            else:
-                # Change direction (cycle through right, down, left, up)
-                d = (d + 1) % 4
-                i, j = i + directions[d][0], j + directions[d][1]  # Move in the new direction
+            # Fill the bottom row (right to left)
+            if top <= bottom:
+                for j in range(right, left - 1, -1):
+                    if current:
+                        result[bottom][j] = current.val
+                        current = current.next
+                bottom -= 1  # Move the bottom boundary up
+
+            # Fill the left column (bottom to top)
+            if left <= right:
+                for i in range(bottom, top - 1, -1):
+                    if current:
+                        result[i][left] = current.val
+                        current = current.next
+                left += 1  # Move the left boundary right
 
         return result
