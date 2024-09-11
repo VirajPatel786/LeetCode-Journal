@@ -2,26 +2,21 @@
 
 /**
  * Function to calculate the minimum number of bit flips required to
- * convert `start` to `goal`.
+ * convert `start` to `goal` using XOR and bitwise operations.
  *
  * @param start (int): The initial integer.
  * @param goal (int): The target integer.
  * @return int: The number of bit flips required.
  */
 int minBitFlips(int start, int goal) {
-    int c = 0;
-
-    // Continue until both 'start' and 'goal' become 0
-    while (start > 0 || goal > 0) {
-        // Compare the least significant bits using bitwise AND operation
-        if ((start & 1) != (goal & 1)) {
-            c++;  // Increment the counter if the bits are different
-        }
-        
-        // Right shift both 'start' and 'goal' by 1 bit
-        start >>= 1;
-        goal >>= 1;
+    int xor_result = start ^ goal;  // XOR to get differing bits
+    int count = 0;
+    
+    // Count the number of 1's in the XOR result
+    while (xor_result > 0) {
+        count += (xor_result & 1);  // Add 1 if the least significant bit is 1
+        xor_result >>= 1;           // Right shift the bits by 1
     }
     
-    return c;
+    return count;
 }
