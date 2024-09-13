@@ -22,31 +22,34 @@
  *         The caller is responsible for freeing the returned array.
  */
 int* xorQueries(int* arr, int arrSize, int** queries, int queriesSize, int* queriesColSize, int* returnSize) {
-    // Allocate memory for the prefix XOR array, with one extra space for prefix[0] = 0
-    int* prefix = (int*)calloc(arrSize + 1, sizeof(int));
     
-    // Build the prefix XOR array
-    // prefix[i] contains XOR of arr[0] to arr[i-1]
-    for (int i = 0; i < arrSize; i++) {
-        prefix[i + 1] = prefix[i] ^ arr[i];
+    // Initialize the prefix XOR array in-place for faster computation
+    int prefix[arrSize];
+    prefix[0] = arr[0]; // First element is the same as in arr
+
+    // Compute the prefix XOR array in a single pass
+    for (int i = 1; i < arrSize; i++) {
+        prefix[i] = prefix[i - 1] ^ arr[i];
     }
 
-    // Allocate memory for the result array, which will store the XOR result for each query
-    int* result = (int*)calloc(queriesSize, sizeof(int));
-    *returnSize = queriesSize;
+    // Allocate memory for the result array, each element storing the XOR result for a query
+    int* ans = (int*)malloc(queriesSize * sizeof(int));
 
     // Process each query
     for (int i = 0; i < queriesSize; i++) {
-        int left = queries[i][0];  // Starting index of the query
-        int right = queries[i][1]; // Ending index of the query
-
-        // XOR of elements from arr[left] to arr[right] is prefix[right + 1] ^ prefix[left]
-        result[i] = prefix[right + 1] ^ prefix[left];
+        // If the query starts at index 0, the result is just the prefix at the end index
+        if (queries[i][0] == 0) {
+            ans[i] = prefix[queries[i][1]];
+        } 
+        // Otherwise, the result is the XOR of two prefix elements
+        else {
+            ans[i] = prefix[queries[i][0] - 1] ^ prefix[queries[i][1]];
+        }
     }
 
-    // Free the memory allocated for the prefix array
-    free(prefix);
+    // Set the returnSize to the number of queries
+    *returnSize = queriesSize;
 
     // Return the result array
-    return result;
+    return ans;
 }
