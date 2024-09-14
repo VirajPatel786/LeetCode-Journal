@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#define MAX(a, b) ((a) > (b) ? (a) : (b))  // Macro to get the maximum of two values
+
 /**
  * @brief Finds the length of the longest subarray whose bitwise AND equals the maximum possible bitwise AND value.
  * 
@@ -24,10 +26,8 @@ int longestSubarray(int* nums, int numsSize) {
         else if (nums[i] == max_num) {
             // If the current number is equal to max_num, extend the current subarray
             current_length++;        // Increment current subarray length
-            // Update max_length to store the longest subarray found
-            if (current_length > max_length) {
-                max_length = current_length;
-            }
+            // Use the MAX macro to update max_length if current_length is longer
+            max_length = MAX(max_length, current_length);
         }
         else {
             // If the current number is less than max_num, reset the current subarray length
