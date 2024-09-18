@@ -1,34 +1,25 @@
-from functools import cmp_to_key
+from typing import List
 
 class Solution:
     def largestNumber(self, nums: List[int]) -> str:
         """
-        Given a list of non-negative integers, this function arranges them to form the largest number.
+        This function arranges a list of non-negative integers such that they form the largest number possible.
         
         Parameters:
         nums (List[int]): List of non-negative integers
         
         Returns:
-        str: The largest possible number formed by rearranging the integers
+        str: The largest possible number formed by arranging the input numbers
         """
-        # Convert numbers to strings for comparison
-        nums_str = list(map(str, nums))
+        # Convert all numbers to strings
+        str_nums = list(map(str, nums))
         
-        # Custom comparator to determine order
-        def compare(x, y):
-            # Compare based on concatenated strings
-            if x + y > y + x:
-                return -1
-            elif x + y < y + x:
-                return 1
-            else:
-                return 0
+        # Sort the string numbers using lexicographical comparison with repetition (x*10)
+        sorted_str_nums = sorted(str_nums, key=lambda x: x * 10, reverse=True)
         
-        # Sort based on custom comparator
-        nums_str.sort(key=cmp_to_key(compare))
+        # Edge case: if the largest number is "0", return "0"
+        if sorted_str_nums[0] == "0":
+            return "0"
         
-        # Join the numbers to form the largest number
-        largest_num = ''.join(nums_str)
-        
-        # Edge case: if the largest number starts with '0', return '0'
-        return '0' if largest_num[0] == '0' else largest_num
+        # Join the sorted string numbers to form the largest number
+        return ''.join(sorted_str_nums)
