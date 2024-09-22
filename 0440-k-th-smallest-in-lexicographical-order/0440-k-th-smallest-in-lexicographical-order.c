@@ -1,30 +1,6 @@
 #include <stdio.h>
 
 /**
- * @brief Counts how many numbers exist with the given prefix in the range [1, n].
- *
- * @param prefix (long long): The current prefix (root of a subtree in lexicographical order).
- * @param n (long long): The upper limit of the range.
- * @return (int): The number of lexicographical steps (i.e., valid numbers) between `prefix`
- *                and `next_prefix` that are within the range [1, n].
- */
-int count_steps(long long prefix, long long n) {
-    long long current = prefix;
-    long long next_prefix = prefix + 1;
-    int steps = 0;
-
-    // Traverse down the tree by powers of 10, counting how many numbers lie between
-    // `prefix` and `next_prefix` at each level of the tree.
-    while (current <= n) {
-        // Add the range of numbers from `current` to `min(n + 1, next_prefix)` in the current level.
-        steps += (next_prefix <= n + 1 ? next_prefix : n + 1) - current;
-        current *= 10;       // Move to the next level in the tree (by appending digits to the prefix)
-        next_prefix *= 10;   // Update the next_prefix accordingly.
-    }
-    return steps;
-}
-
-/**
  * @brief Finds the k-th lexicographically smallest integer in the range [1, n].
  *
  * @param n (int): The upper limit of the range.
@@ -32,26 +8,27 @@ int count_steps(long long prefix, long long n) {
  * @return (int): The k-th lexicographically smallest number.
  */
 int findKthNumber(int n, int k) {
-    int current = 1;
-    k--;  // The first number is `1`, so decrement k by 1 to handle zero-indexing.
+    int current_number = 1;  // Start with the smallest lexicographical number (1).
 
-    // Loop until we find the k-th smallest number.
-    while (k > 0) {
-        // Count how many numbers exist in the subtree rooted at `current`.
-        int steps = count_steps(current, n);
+    // Continue until we find the k-th smallest number.
+    while (k > 1) {
+        long count = 0;  // Count of numbers in the subtree rooted at `current_number`.
 
-        if (steps <= k) {
-            // If the entire subtree rooted at `current` has fewer or equal numbers than `k`,
-            // skip this subtree by moving to the next prefix.
-            current += 1;
-            k -= steps;
+        // Calculate how many numbers exist under the prefix `current_number`.
+        for (long step_size = 1, prefix = current_number; prefix <= n; prefix *= 10, step_size *= 10) {
+            // Count numbers in the range [prefix, min(prefix + step_size - 1, n)].
+            count += (n - prefix + 1 < step_size) ? (n - prefix + 1) : step_size;
+        }
+
+        // If the subtree rooted at `current_number` contains fewer than `k` numbers, skip it.
+        if (k > count) {
+            k -= count;  // Skip the current subtree.
+            current_number++;  // Move to the next lexicographical prefix.
         } else {
-            // If the subtree contains more than `k` numbers, go deeper into the subtree
-            // by multiplying `current` by 10 to move to the next level.
-            current *= 10;
-            k -= 1;
+            k--;  // Go deeper into the current subtree.
+            current_number *= 10;  // Move to the next level in the tree (prefix `current_number` becomes `current_number0`).
         }
     }
 
-    return current;
+    return current_number;  // Return the k-th smallest number.
 }
