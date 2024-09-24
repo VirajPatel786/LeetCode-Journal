@@ -4,7 +4,7 @@ class Solution:
     def longestCommonPrefix(self, arr1: List[int], arr2: List[int]) -> int:
         """
         Finds the length of the longest common prefix between pairs of numbers
-        in two arrays.
+        in two arrays by using a HashSet for quick look-up of prefixes.
         
         Parameters:
         arr1 (List[int]): A list of integers.
@@ -13,35 +13,23 @@ class Solution:
         Returns:
         int: The length of the longest common prefix.
         """
-        # Convert both arrays of integers to strings once
-        arr1_str = list(map(str, arr1))
-        arr2_str = list(map(str, arr2))
+        # Create a HashSet to store all prefixes of elements in arr1
+        prefix_set = set()
+        
+        # Add all possible prefixes of each number in arr1 to the HashSet
+        for num1 in arr1:
+            str_num = str(num1)
+            for i in range(1, len(str_num) + 1):
+                prefix_set.add(str_num[:i])
         
         max_length = 0
         
-        # Compare each number in arr1_str with each number in arr2_str
-        for str1 in arr1_str:
-            for str2 in arr2_str:
-                # Find the common prefix length
-                common_length = self.commonPrefixLength(str1, str2)
-                # Update max_length with the maximum prefix length found
-                max_length = max(max_length, common_length)
+        # Check all prefixes of numbers in arr2 and find the longest common prefix
+        for num2 in arr2:
+            str_num = str(num2)
+            for i in range(len(str_num), 0, -1):  # Start from the longest prefix
+                if str_num[:i] in prefix_set:
+                    max_length = max(max_length, i)
+                    break  # Stop early once we find the longest matching prefix
         
         return max_length
-    
-    def commonPrefixLength(self, s1: str, s2: str) -> int:
-        """
-        Finds the common prefix length between two strings.
-        
-        Parameters:
-        s1 (str): First string.
-        s2 (str): Second string.
-        
-        Returns:
-        int: Length of the common prefix.
-        """
-        min_len = min(len(s1), len(s2))
-        i = 0
-        while i < min_len and s1[i] == s2[i]:
-            i += 1
-        return i
