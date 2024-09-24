@@ -4,7 +4,7 @@ class Solution:
     def longestCommonPrefix(self, arr1: List[int], arr2: List[int]) -> int:
         """
         Finds the length of the longest common prefix between pairs of numbers
-        in two arrays by using a HashSet for quick look-up of prefixes.
+        in two arrays using a HashSet for quick look-up of integer prefixes.
         
         Parameters:
         arr1 (List[int]): A list of integers.
@@ -13,23 +13,26 @@ class Solution:
         Returns:
         int: The length of the longest common prefix.
         """
-        # Create a HashSet to store all prefixes of elements in arr1
+        # Create a set to store all prefixes of numbers in arr1
         prefix_set = set()
+
+        # Add all possible prefixes of each number in arr1 to the set
+        for number in arr1:
+            current_prefix = number
+            while current_prefix > 0:
+                prefix_set.add(current_prefix)
+                current_prefix //= 10  # Remove the last digit
+
+        max_common_prefix_length = 0
+
+        # Check all numbers in arr2 to find the longest matching prefix
+        for number in arr2:
+            current_prefix = number
+            while current_prefix > 0:
+                if current_prefix in prefix_set:
+                    # Once a match is found, update the answer with the length of the number
+                    max_common_prefix_length = max(max_common_prefix_length, len(str(current_prefix)))
+                    break
+                current_prefix //= 10  # Remove the last digit
         
-        # Add all possible prefixes of each number in arr1 to the HashSet
-        for num1 in arr1:
-            str_num = str(num1)
-            for i in range(1, len(str_num) + 1):
-                prefix_set.add(str_num[:i])
-        
-        max_length = 0
-        
-        # Check all prefixes of numbers in arr2 and find the longest common prefix
-        for num2 in arr2:
-            str_num = str(num2)
-            for i in range(len(str_num), 0, -1):  # Start from the longest prefix
-                if str_num[:i] in prefix_set:
-                    max_length = max(max_length, i)
-                    break  # Stop early once we find the longest matching prefix
-        
-        return max_length
+        return max_common_prefix_length
