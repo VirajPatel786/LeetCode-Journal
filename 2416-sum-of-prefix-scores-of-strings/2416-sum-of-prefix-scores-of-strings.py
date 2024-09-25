@@ -1,3 +1,5 @@
+from typing import Dict
+
 class TrieNode:
     """
     TrieNode represents a single node in the Trie.
@@ -6,8 +8,8 @@ class TrieNode:
     - count: An integer that keeps track of how many words pass through this node.
     """
     def __init__(self):
-        self.children = {}  # Dictionary to store child TrieNodes for each character.
-        self.count = 0  # Count of words passing through this node.
+        self.children: Dict[str, TrieNode] = {}  # Dictionary to store child TrieNodes for each character.
+        self.count: int = 0  # Count of words passing through this node.
 
 class Trie:
     """
@@ -18,9 +20,9 @@ class Trie:
     """
     def __init__(self):
         # Initialize the root of the Trie
-        self.root = TrieNode()
+        self.root: TrieNode = TrieNode()
 
-    def insert(self, word):
+    def insert(self, word: str) -> None:
         """
         Inserts a word into the Trie. As the word is inserted, it increments the count for each prefix.
 
@@ -37,7 +39,7 @@ class Trie:
             # Increment the count to indicate this prefix is part of another word.
             node.count += 1
 
-    def calculate_prefix_score(self, word):
+    def calculate_prefix_score(self, word: str) -> int:
         """
         Calculates the sum of scores for every prefix of a given word.
         The score of each prefix is the number of words that have that prefix.
