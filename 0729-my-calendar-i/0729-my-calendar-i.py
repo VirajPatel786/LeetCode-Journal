@@ -1,3 +1,5 @@
+from bisect import bisect_left
+
 class MyCalendar:
     """
     A class to manage booking of events where no two events should overlap.
@@ -22,16 +24,20 @@ class MyCalendar:
         bool: True if the event is successfully booked (i.e., no overlap),
               False if there is an overlap with an existing event.
         """
-        # Iterate through all existing events to check for overlap
-        for time_start, time_end in self.events:
-            # Overlap condition: if the new event starts before the existing event ends
-            # and the new event ends after the existing event starts.
-            if start < time_end and end > time_start:
-                return False  # Return False if there is any overlap
+        # Find the insertion point for the new event's start time
+        index = bisect_left(self.events, [start, end])
+
+        # Check if the new event overlaps with the previous event
+        if index > 0 and self.events[index - 1][1] > start:
+            return False
         
-        # If no overlap is found, add the new event to the list of events
-        self.events.append([start, end])
-        return True  # Return True as the event is successfully booked
+        # Check if the new event overlaps with the next event
+        if index < len(self.events) and self.events[index][0] < end:
+            return False
+
+        # Insert the new event into the sorted list
+        self.events.insert(index, [start, end])
+        return True
 
 # Your MyCalendar object will be instantiated and called as such:
 # obj = MyCalendar()
