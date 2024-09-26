@@ -15,6 +15,30 @@ typedef struct {
 } MyCalendar;
 
 /**
+ * @brief Helper function to implement the behavior of bisect_left.
+ * 
+ * This function finds the position to insert a new event (start, end) while keeping the events sorted by start time.
+ * 
+ * @param events int**: Array of events (each event is [start, end]).
+ * @param size int: Current number of events in the array.
+ * @param start int: The start time of the new event.
+ * 
+ * @return int: The index where the new event should be inserted.
+ */
+int bisect_left(int **events, int size, int start) {
+    int low = 0, high = size;
+    while (low < high) {
+        int mid = (low + high) / 2;
+        if (events[mid][0] < start) {
+            low = mid + 1;
+        } else {
+            high = mid;
+        }
+    }
+    return low;
+}
+
+/**
  * @brief Creates a new MyCalendar object.
  *
  * Allocates memory for the MyCalendar structure and initializes its event array
@@ -44,14 +68,17 @@ MyCalendar* myCalendarCreate() {
  * @return bool: Returns true if the event can be booked, false if it overlaps with existing events.
  */
 bool myCalendarBook(MyCalendar* obj, int start, int end) {
-    // Check for overlap with existing events
-    for (int i = 0; i < obj->size; i++) {
-        int* event = obj->events[i];
-        int event_start = event[0];
-        int event_end = event[1];
-        if (start < event_end && end > event_start) {
-            return false;  // Overlap found, cannot book
-        }
+    // Find the correct position to insert using bisect_left logic
+    int index = bisect_left(obj->events, obj->size, start);
+
+    // Check for overlap with the event before the insertion point (if it exists)
+    if (index > 0 && obj->events[index - 1][1] > start) {
+        return false;  // Overlap found with the previous event
+    }
+
+    // Check for overlap with the event after the insertion point (if it exists)
+    if (index < obj->size && obj->events[index][0] < end) {
+        return false;  // Overlap found with the next event
     }
 
     // Resize the events array if needed
@@ -60,10 +87,15 @@ bool myCalendarBook(MyCalendar* obj, int start, int end) {
         obj->events = (int **)realloc(obj->events, obj->capacity * sizeof(int *));
     }
 
-    // Add the new event to the list of events
-    obj->events[obj->size] = (int *)malloc(2 * sizeof(int));
-    obj->events[obj->size][0] = start;
-    obj->events[obj->size][1] = end;
+    // Shift events to make room for the new event
+    for (int i = obj->size; i > index; i--) {
+        obj->events[i] = obj->events[i - 1];
+    }
+
+    // Insert the new event at the correct position
+    obj->events[index] = (int *)malloc(2 * sizeof(int));
+    obj->events[index][0] = start;
+    obj->events[index][1] = end;
     obj->size++;
 
     return true;  // Successfully booked
