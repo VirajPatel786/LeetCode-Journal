@@ -1,3 +1,5 @@
+from bisect import bisect_left
+
 class MyCalendarTwo:
     """
     A calendar system that allows event bookings and prevents triple bookings.
@@ -36,19 +38,24 @@ class MyCalendarTwo:
         bool: Returns True if the booking is successful and does not cause a triple
               booking. Returns False if the booking would result in a triple booking.
         """
-        # Check if there is a conflict with double bookings
-        for os, oe in self.overlaps:
+        # Check if there is a conflict with double bookings using binary search
+        i = bisect_left(self.overlaps, (start, end))
+        for j in range(max(i - 1, 0), min(i + 1, len(self.overlaps))):
+            os, oe = self.overlaps[j]
             if max(start, os) < min(end, oe):
                 return False
 
-        # Find and store the overlap between the new booking and existing single bookings
-        for bs, be in self.booked:
+        # Find and store the overlap between the new booking and existing single bookings using binary search
+        i = bisect_left(self.booked, (start, end))
+        for j in range(max(i - 1, 0), min(i + 1, len(self.booked))):
+            bs, be = self.booked[j]
             if max(start, bs) < min(end, be):
                 self.overlaps.append((max(start, bs), min(end, be)))
 
-        # If no triple booking, add the event to single bookings
-        self.booked.append((start, end))
+        # Insert the event in sorted order in single bookings
+        self.booked.insert(i, (start, end))
         return True
+
 
 # Your MyCalendarTwo object will be instantiated and called as such:
 # obj = MyCalendarTwo()
