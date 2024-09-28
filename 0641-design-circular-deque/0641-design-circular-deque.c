@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>  // Include stdbool.h to use bool type
+#include <stdbool.h>
 
 /**
  * @brief Struct representing a circular deque.
