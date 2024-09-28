@@ -1,65 +1,121 @@
 class MyCircularDeque:
+    """
+    Circular deque implementation using a list with fixed capacity.
+    
+    Attributes:
+    capacity (int): Maximum number of elements the deque can hold.
+    length (int): Current number of elements in the deque.
+    dequeue (list): List to store the elements of the deque.
+    """
 
     def __init__(self, k: int):
+        """
+        Initializes the deque with a specified capacity.
+        
+        Parameters:
+        k (int): The maximum capacity of the deque.
+        """
         self.length = 0
         self.capacity = k
-        self.dequeue = list()
+        self.dequeue = []
 
     def insertFront(self, value: int) -> bool:
-        if self.length + 1 <= self.capacity:
+        """
+        Inserts an element at the front of the deque.
+        
+        Parameters:
+        value (int): The value to insert at the front.
+        
+        Returns:
+        bool: True if the operation is successful, False if the deque is full.
+        """
+        if self.length < self.capacity:  # Check if there's space to insert
             self.dequeue.insert(0, value)
             self.length += 1
             return True
-        else:
-            return False
+        return False
 
     def insertLast(self, value: int) -> bool:
-        if self.length + 1 <= self.capacity:
+        """
+        Inserts an element at the rear of the deque.
+        
+        Parameters:
+        value (int): The value to insert at the rear.
+        
+        Returns:
+        bool: True if the operation is successful, False if the deque is full.
+        """
+        if self.length < self.capacity:  # Check if there's space to insert
             self.dequeue.append(value)
             self.length += 1
             return True
-        else:
-            return False
-        
+        return False
+
     def deleteFront(self) -> bool:
-        if self.length == 0:
+        """
+        Deletes an element from the front of the deque.
+        
+        Returns:
+        bool: True if the operation is successful, False if the deque is empty.
+        """
+        if self.length == 0:  # Check if the deque is empty
             return False
-        else:
-            self.dequeue.pop(0)
-            self.length -= 1
-            return True
+        self.dequeue.pop(0)
+        self.length -= 1
+        return True
 
     def deleteLast(self) -> bool:
-        if self.length == 0:
+        """
+        Deletes an element from the rear of the deque.
+        
+        Returns:
+        bool: True if the operation is successful, False if the deque is empty.
+        """
+        if self.length == 0:  # Check if the deque is empty
             return False
-        else:
-            self.dequeue.pop(-1)
-            self.length -= 1
-            return True
+        self.dequeue.pop()
+        self.length -= 1
+        return True
 
     def getFront(self) -> int:
+        """
+        Gets the front element of the deque.
+        
+        Returns:
+        int: The front element, or -1 if the deque is empty.
+        """
         if self.length == 0:
             return -1
-        else:
-            return self.dequeue[0]
+        return self.dequeue[0]
 
     def getRear(self) -> int:
+        """
+        Gets the rear element of the deque.
+        
+        Returns:
+        int: The rear element, or -1 if the deque is empty.
+        """
         if self.length == 0:
             return -1
-        else:
-            return self.dequeue[-1]
+        return self.dequeue[-1]
 
     def isEmpty(self) -> bool:
-        if self.length == 0:
-            return True
-        else:
-            return False
+        """
+        Checks whether the deque is empty.
+        
+        Returns:
+        bool: True if the deque is empty, False otherwise.
+        """
+        return self.length == 0
 
     def isFull(self) -> bool:
-        if self.length == self.capacity:
-            return True
-        else:
-            return False
+        """
+        Checks whether the deque is full.
+        
+        Returns:
+        bool: True if the deque is full, False otherwise.
+        """
+        return self.length == self.capacity
 
 
 # Your MyCircularDeque object will be instantiated and called as such:
