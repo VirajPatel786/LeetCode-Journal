@@ -16,14 +16,12 @@ class Solution:
         
         # Iterate through numbers up to sqrt(n)
         for i in range(1, int(math.sqrt(n)) + 1):
-            print(i, end = " ")
             if n % i == 0:  # If i is a divisor of n
                 factors.append(i)  # Add the divisor to the list
                 if i != n // i:  # Avoid adding the square root twice
                     factors.append(n // i)
         
         # Sort the factors list to find the k-th smallest factor
-        print(factors)
         factors.sort()
         
         # If k is valid, return the k-th factor; otherwise, return -1
