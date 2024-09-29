@@ -10,18 +10,19 @@ class Solution:
         Returns:
         int: The number of substrings created.
         """
-        seen = 0  # Bitmask to track characters in the current substring
         count = 0  # Counter for the number of substrings created
-
+        seen_chars = set()  # Set to store characters in the current substring
+        
+        # Iterate over each character in the string
         for ch in s:
-            bit_position = ord(ch) - ord('a')  # Calculate bit position for the character
-            if seen & (1 << bit_position):
-                # If character already seen, increment the partition count and reset the bitmask
+            if ch in seen_chars:
+                # If the character is already in the current substring, 
+                # increment the substring count and start a new substring
                 count += 1
-                seen = 0
+                seen_chars.clear()  # Clear the set for the new substring
             
-            # Mark the character as seen by setting the corresponding bit
-            seen |= (1 << bit_position)
-
-        # Return the total count of substrings, including the last one
-        return count + 1
+            # Add the current character to the set for the current substring
+            seen_chars.add(ch)
+        
+        # Return the total count of substrings (including the last one)
+        return count + 1  # +1 to account for the last substring
