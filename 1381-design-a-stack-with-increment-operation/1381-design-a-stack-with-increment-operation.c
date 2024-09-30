@@ -43,8 +43,7 @@ CustomStack* customStackCreate(int maxSize) {
  */
 void customStackPush(CustomStack* obj, int x) {
     if (obj != NULL && obj->stack_size < obj->stack_capacity) {
-        obj->stack[obj->stack_size] = x;  // Add element at the current top
-        obj->stack_size++;  // Increment size after adding the element
+        obj->stack[obj->stack_size++] = x;  // Add element at the current top, Increment size after adding the element
     }
 }
 
@@ -57,8 +56,7 @@ void customStackPush(CustomStack* obj, int x) {
  */
 int customStackPop(CustomStack* obj) {
     if (obj != NULL && obj->stack_size != 0) {
-        obj->stack_size--;  // Decrement size first
-        return obj->stack[obj->stack_size];  // Return the element at the new top
+        return obj->stack[--(obj->stack_size)];  // Decrement size first, Return the element at the new top
     }
     return -1;  // Return -1 if the stack is empty.
 }
