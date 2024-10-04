@@ -13,20 +13,18 @@ class Solution:
         Returns:
         int: The sum of the products of the skill levels of the pairs, or -1 if it is not possible.
         """
-
-        # Edge case: If there are only two players, directly return the product of their skills.
-        if len(skill) == 2:
-            return skill[0] * skill[1]
-
+        
         # Calculate the total sum of skills.
         total_skill_sum = sum(skill)
 
-        # Calculate the required skill sum for a pair.
-        # Since each pair's sum should be the same, total_skill_sum should be even.
-        if total_skill_sum % 2 != 0:
-            return -1
+        # Calculate the required skill sum for each pair.
+        num_players = len(skill)
+        num_pairs = num_players // 2
+        pair_skill_sum = total_skill_sum // num_pairs  # Required skill sum for each pair
 
-        pair_skill_sum = total_skill_sum // (len(skill) // 2)  # Total skill required for each pair
+        # If the total skill sum is not divisible by the number of pairs, return -1
+        if total_skill_sum % num_pairs != 0:
+            return -1
 
         # Count the frequency of each skill using Counter.
         skill_counter = Counter(skill)
