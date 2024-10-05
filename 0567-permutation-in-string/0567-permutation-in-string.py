@@ -1,38 +1,45 @@
-from collections import Counter
-
 class Solution:
-    def checkInclusion(self, s1: str, s2: str) -> bool:
+    def checkInclusion(self, pattern: str, text: str) -> bool:
         """
-        Check if a permutation of s1 is a substring of s2.
+        Check if a permutation of the pattern is a substring of the text.
 
         Parameters:
-        s1 (str): First input string.
-        s2 (str): Second input string.
+        pattern (str): The pattern string for which we need to check permutations.
+        text (str): The text string in which we check for permutations of the pattern.
 
         Returns:
-        bool: True if a permutation of s1 is a substring of s2, otherwise False.
+        bool: True if a permutation of pattern exists as a substring in text, False otherwise.
         """
+        pattern_length = len(pattern)
+        text_length = len(text)
 
-        len_s1, len_s2 = len(s1), len(s2)
-        if len_s1 > len_s2:
+        # If the pattern is longer than the text, no permutation can be a substring
+        if pattern_length > text_length:
             return False
-        
-        s1_count = Counter(s1)
-        window_count = Counter()
 
-        for i in range(len_s2):
-            # Add one char to the window
-            window_count[s2[i]] += 1
+        # Frequency counts of characters in pattern and the first window in text
+        pattern_count = [0] * 26  # For storing frequency of each character in pattern
+        window_count = [0] * 26   # For storing frequency of characters in current window of text
+
+        # Fill the frequency count for the pattern and the first window of the text
+        for i in range(pattern_length):
+            pattern_count[ord(pattern[i]) - ord('a')] += 1
+            window_count[ord(text[i]) - ord('a')] += 1
+
+        # If the frequency of characters matches, the current window is a permutation
+        if pattern_count == window_count:
+            return True
+
+        # Slide the window over the text, one character at a time
+        for i in range(pattern_length, text_length):
+            # Add the new character (right side of the window) to the window count
+            window_count[ord(text[i]) - ord('a')] += 1
             
-            # Remove one char from the window if it's larger than s1
-            if i >= len_s1:
-                if window_count[s2[i - len_s1]] == 1:
-                    del window_count[s2[i - len_s1]]
-                else:
-                    window_count[s2[i - len_s1]] -= 1
+            # Remove the character that's left out of the window (left side of the window)
+            window_count[ord(text[i - pattern_length]) - ord('a')] -= 1
 
-            # Compare the window's character count with s1's character count
-            if window_count == s1_count:
+            # Compare the pattern's character frequency with the current window's frequency
+            if pattern_count == window_count:
                 return True
 
         return False
