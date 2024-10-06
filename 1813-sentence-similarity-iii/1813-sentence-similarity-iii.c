@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 /**
  * @brief Check if two sentences are similar by inserting a sentence into one.
@@ -12,74 +11,48 @@
  * @return (bool): Returns true if the sentences are similar, false otherwise.
  */
 bool areSentencesSimilar(char* sentence1, char* sentence2) {
-    // Get the lengths of the input sentences
-    int len1 = strlen(sentence1);
-    int len2 = strlen(sentence2);
-
-    // Allocate dynamic memory to make copies of the input sentences
-    char *s1_copy = (char *)malloc((len1 + 1) * sizeof(char));
-    char *s2_copy = (char *)malloc((len2 + 1) * sizeof(char));
+    // Split the sentences into words using space as a delimiter
+    // Create pointers to keep track of the tokens
+    char *token1, *token2;
     
-    // Copy the input sentences into the allocated memory
+    // Create a copy of sentence1 and sentence2 to tokenize
+    char s1_copy[101], s2_copy[101];
     strcpy(s1_copy, sentence1);
     strcpy(s2_copy, sentence2);
-
-    // Tokenize the sentences into words using space as a delimiter
-    int max_words1 = 0, max_words2 = 0;
-
-    // Count the number of words in sentence1
-    for (int i = 0; i < len1; i++) {
-        if (s1_copy[i] == ' ') {
-            max_words1++;
-        }
-    }
-    max_words1++; // For the last word or if no spaces are present
-
-    // Count the number of words in sentence2
-    for (int i = 0; i < len2; i++) {
-        if (s2_copy[i] == ' ') {
-            max_words2++;
-        }
-    }
-    max_words2++; // For the last word or if no spaces are present
-
-    // Dynamically allocate arrays to hold the words
-    char **words1 = (char **)malloc(max_words1 * sizeof(char *));
-    char **words2 = (char **)malloc(max_words2 * sizeof(char *));
+    
+    // Tokenize both sentences using spaces
+    char *words1[101], *words2[101]; // Arrays to store the words of the sentences
+    int len1 = 0, len2 = 0;
     
     // Tokenize sentence1
-    char *token1 = strtok(s1_copy, " ");
-    int len1_words = 0;
+    token1 = strtok(s1_copy, " ");
     while (token1 != NULL) {
-        words1[len1_words++] = token1;
+        words1[len1++] = token1;
         token1 = strtok(NULL, " ");
     }
     
     // Tokenize sentence2
-    char *token2 = strtok(s2_copy, " ");
-    int len2_words = 0;
+    token2 = strtok(s2_copy, " ");
     while (token2 != NULL) {
-        words2[len2_words++] = token2;
+        words2[len2++] = token2;
         token2 = strtok(NULL, " ");
     }
-
-    // Check prefix matches: Compare words from the start of both lists
+    
+    // Initialize two pointers for prefix and suffix matching
     int i = 0, j = 0;
-    while (i < len1_words && i < len2_words && strcmp(words1[i], words2[i]) == 0) {
+    
+    // Check prefix matches: Compare words from the start of both lists
+    // Increment i as long as the words at index i are the same in both lists
+    while (i < len1 && i < len2 && strcmp(words1[i], words2[i]) == 0) {
         i++;
     }
     
     // Check suffix matches: Compare words from the end of both lists
-    while (j < len1_words - i && j < len2_words - i && strcmp(words1[len1_words - 1 - j], words2[len2_words - 1 - j]) == 0) {
+    // Increment j as long as the words at index -1-j are the same in both lists
+    while (j < len1 - i && j < len2 - i && strcmp(words1[len1 - 1 - j], words2[len2 - 1 - j]) == 0) {
         j++;
     }
-
-    // Free allocated memory
-    free(s1_copy);
-    free(s2_copy);
-    free(words1);
-    free(words2);
     
     // The sentences are similar if the matched prefix + suffix covers at least the smaller sentence
-    return i + j >= len1_words || i + j >= len2_words;
+    return i + j >= len1 || i + j >= len2;
 }
