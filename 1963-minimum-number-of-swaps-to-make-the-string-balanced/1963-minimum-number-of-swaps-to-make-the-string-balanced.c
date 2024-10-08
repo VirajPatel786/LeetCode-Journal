@@ -5,21 +5,21 @@
  * @return (int): The minimum number of swaps required to balance the string.
  */
 int minSwaps(char* s) {
-    int unmatched_open_brackets = 0;  // To track unmatched opening brackets
+    int balance = 0;  // Tracks the balance of unmatched opening brackets '['
+    int unmatched_close_brackets = 0;  // Tracks unmatched closing brackets ']'
 
-    // Traverse the string until the null terminator is reached
-    for (int i = 0; s[i] != '\0'; i++) {
-        if (s[i] == '[') {
-            // Increment for each unmatched opening bracket '['
-            unmatched_open_brackets++;
-        } else if (unmatched_open_brackets > 0) {
-            // If we encounter a closing bracket ']' and there are unmatched '[',
-            // decrement the unmatched count since we found a valid pair.
-            unmatched_open_brackets--;
+    // Traverse the string until the null terminator
+    for (; *s; s++) {
+        if (balance == 0 && *s == ']') {
+            // If there's no unmatched opening bracket and we encounter a closing bracket,
+            // it means this closing bracket is unmatched, so we increment the count.
+            unmatched_close_brackets++;
+        } else {
+            // Increment balance for '[' and decrement for ']' (2 * is used to avoid conditionals)
+            balance += 2 * (*s == '[') - 1;
         }
     }
 
-    // Each swap can fix two unmatched brackets.
-    // Increment unmatched_open_brackets by 1 before division to handle odd cases.
-    return ++unmatched_open_brackets / 2;
+    // Each swap fixes two unmatched brackets, so we need (unmatched_close_brackets + 1) / 2 swaps
+    return (unmatched_close_brackets + 1) / 2;
 }
