@@ -9,17 +9,14 @@ int minSwaps(char* s) {
     int unmatched_close_brackets = 0;  // Tracks unmatched closing brackets ']'
 
     // Traverse the string until the null terminator
-    for (; *s; s++) {
-        if (balance == 0 && *s == ']') {
-            // If there's no unmatched opening bracket and we encounter a closing bracket,
-            // it means this closing bracket is unmatched, so we increment the count.
+    for (; *s; s++)
+        if (balance == 0 && *s == ']')
+            // Increment unmatched closing brackets count if we encounter ']' without matching '['
             unmatched_close_brackets++;
-        } else {
-            // Increment balance for '[' and decrement for ']' (2 * is used to avoid conditionals)
+        else
+            // Increment balance for '[' and decrement for ']'
             balance += 2 * (*s == '[') - 1;
-        }
-    }
 
     // Each swap fixes two unmatched brackets, so we need (unmatched_close_brackets + 1) / 2 swaps
-    return (unmatched_close_brackets + 1) / 2;
+    return ++unmatched_close_brackets / 2;
 }
