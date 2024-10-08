@@ -2,25 +2,22 @@ class Solution:
     def minSwaps(self, s: str) -> int:
         """
         Returns the minimum number of swaps to make the string balanced.
-        
+
         Parameters:
         s (str): The input string consisting of '[' and ']'.
-        
+
         Returns:
         int: The minimum number of swaps required to balance the string.
         """
-        balance = 0
-        min_balance = 0
+        unmatched_open_brackets = 0
+
+        # Traverse the string and count unmatched open brackets.
+        for bracket in s:
+            if bracket == '[':
+                unmatched_open_brackets += 1
+            elif unmatched_open_brackets > 0:
+                # Found a matching ']', decrement the unmatched open brackets count.
+                unmatched_open_brackets -= 1
         
-        # Traverse the string to calculate the balance
-        for char in s:
-            if char == '[':
-                balance += 1
-            else:
-                balance -= 1
-            
-            # Track the minimum balance encountered
-            min_balance = min(min_balance, balance)
-        
-        # The number of swaps needed is the ceiling of half the negative imbalance
-        return (-min_balance + 1) // 2
+        # We need (unmatched_open_brackets // 2) swaps to balance all unmatched brackets.
+        return (unmatched_open_brackets + 1) // 2
