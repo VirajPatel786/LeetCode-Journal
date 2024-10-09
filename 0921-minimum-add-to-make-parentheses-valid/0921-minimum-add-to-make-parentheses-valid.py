@@ -5,6 +5,8 @@ class Solution:
         for ch in s:
             if ch == '(':
                 open_parentheses += 1
+            elif ch == ')' and open_parentheses > 0:
+                open_parentheses -= 1
             else:
                 close_parentheses += 1
-        return abs(open_parentheses - close_parentheses)
+        return open_parentheses + close_parentheses
