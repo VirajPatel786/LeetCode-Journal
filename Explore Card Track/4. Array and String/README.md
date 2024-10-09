@@ -22,13 +22,7 @@ The folder is organized by the chapters or sections of **Array and String** Expl
 
 ## How to Use
 
-1. **Study the Topics**: Start with the topic you're least familiar with, or proceed in order. The solutions and notes in each section will help you understand the key concepts of arrays and strings.
-   
-2. **Solve Problems**: After reviewing the explanations, try solving problems on your own. Use the solutions provided in this folder as a reference or guide when needed.
-
-3. **Practice the Two-Pointer Technique**: Pay special attention to the problems involving the two-pointer technique, as it is commonly used in array and string problems during coding interviews.
-
-4. **Review and Reflect**: After solving a problem, review the solution and reflect on different ways to optimize it or make it more efficient.
+This guide is meant to be followed sequentially, starting with the basics and gradually moving to more complex topics. Review the solutions and explanations to reinforce your understanding. It's recommended to attempt solving the problems on your own before consulting the provided solutions.
 
 ## Contributions
 
