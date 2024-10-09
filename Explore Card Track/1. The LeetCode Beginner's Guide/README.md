@@ -1,6 +1,6 @@
 # LeetCode Beginner's Guide
 
-This directory contains my solutions and notes from the LeetCode Beginner's Guide, a curated set of problems designed to introduce and strengthen fundamental coding concepts. The problems in this guide are perfect for newcomers to coding and those looking to solidify their understanding of the basics.
+This directory contains my solutions and notes from the **LeetCode Beginner's Guide**, a curated set of problems designed to introduce and strengthen fundamental coding concepts. The problems in this guide are perfect for newcomers to coding and those looking to solidify their understanding of the basics.
 
 ## Purpose
 
@@ -8,7 +8,7 @@ The content in this folder is designed to help new users of all experience level
 
 ## Structure
 
-The folder is organized by the chapters or sections of the Beginner's Guide, with each section containing:
+The folder is organized by the chapters or sections of the **LeetCode Beginner's Guide** Explore Card, with each section containing:
 
 - **Solution Code**: The main solution file for each problem, written in C, Python, or both.
 - **Explanations** (optional): Comments within the code or separate documents explaining the concepts, approaches, and reasoning behind each solution.
