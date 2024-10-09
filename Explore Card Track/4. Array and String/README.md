@@ -14,7 +14,7 @@ The purpose of this folder is to provide a comprehensive introduction to arrays 
 
 ## Structure
 
-The folder is organized by the chapters or sections of **Arrays and Strings**, with each section containing:
+The folder is organized by the chapters or sections of **Array and String** Explore Card, with each section containing:
 
 - **Solution Code**: The main solution file for each problem, written in C, Python, or both.
 - **Explanations (optional)**: Comments within the code or separate documents explaining the concepts, approaches, and reasoning behind each solution.
