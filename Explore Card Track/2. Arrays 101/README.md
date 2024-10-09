@@ -1,6 +1,6 @@
 # Arrays 101
 
-This directory contains my solutions and notes from the "Arrays 101" Explore Card on LeetCode. Arrays are a fundamental data structure, forming the basis for many other data structures and algorithms. Mastering arrays is essential for solving a wide range of problems, especially in coding interviews.
+This directory contains my solutions and notes from the **Arrays 101** Explore Card on LeetCode. Arrays are a fundamental data structure, forming the basis for many other data structures and algorithms. Mastering arrays is essential for solving a wide range of problems, especially in coding interviews.
 
 ## Purpose
 
@@ -15,7 +15,7 @@ By the end of this guide, you will be well-equipped to tackle array-related prob
 
 ## Structure
 
-The folder is organized by the chapters or sections of the Beginner's Guide, with each section containing:
+The folder is organized by the chapters or sections of the **Arrays 101** Explore Card, with each section containing:
 
 - **Solution Code**: The main solution file for each problem, written in C, Python, or both.
 - **Explanations** (optional): Comments within the code or separate documents explaining the concepts, approaches, and reasoning behind each solution.
