@@ -11,20 +11,19 @@ class Solution:
         int: The minimum number of parentheses to be added
         """
 
-        open_parentheses = 0  # Counter for unbalanced '(' parentheses
-        close_parentheses = 0  # Counter for unbalanced ')' parentheses
+        open_parentheses = 0  # Tracks unmatched '(' parentheses
+        close_parentheses = 0  # Tracks unmatched ')' parentheses
 
         # Iterate through each character in the string
         for ch in s:
-            if ch == '(':  # If it's an opening parenthesis
-                open_parentheses += 1  # Increase the count for '('
-            elif ch == ')':
-                if open_parentheses > 0:
-                    # If there's an unmatched '(', match it with the current ')'
-                    open_parentheses -= 1
-                else:
-                    # If no unmatched '(', increment the ')' counter
-                    close_parentheses += 1
+            if ch == '(':  # For each opening parenthesis
+                open_parentheses += 1  # Increment unmatched '(' count
+            elif ch == ')' and open_parentheses > 0:
+                # If there's an unmatched '(', match it with the current ')'
+                open_parentheses -= 1
+            else:
+                # If no unmatched '(', it's an unmatched closing parenthesis
+                close_parentheses += 1
 
-        # The total number of unmatched parentheses is the sum of unmatched '(' and ')'
+        # The total additions needed are the sum of unmatched '(' and unmatched ')'
         return open_parentheses + close_parentheses
