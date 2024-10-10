@@ -24,10 +24,10 @@ class Solution:
         result = 0
 
         # Traverse the list in reverse order to find the widest ramp.
-        for i, num in reversed(tuple(enumerate(nums))):
+        for i in range(len(nums) - 1, -1, -1):
             # While the current number can form a valid ramp with the top index of the stack,
             # update the result with the maximum width ramp and pop the index from the stack.
-            while stack and nums[stack[-1]] <= num:
+            while stack and nums[stack[-1]] <= nums[i]:
                 result = max(result, i - stack.pop())
 
             # If the stack becomes empty, we can stop early as no wider ramp is possible.
