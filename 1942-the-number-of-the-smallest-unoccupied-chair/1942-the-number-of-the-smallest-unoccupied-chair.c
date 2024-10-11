@@ -133,6 +133,9 @@ int extractMin(Heap* heap) {
 int compareEvents(const void* a, const void* b) {
     Event* event1 = (Event*)a;
     Event* event2 = (Event*)b;
+    if (event1->time == event2->time) {
+        return event1->isArrival - event2->isArrival;  // Departure comes before arrival if same time
+    }
     return event1->time - event2->time;
 }
 
@@ -187,7 +190,6 @@ int smallestChair(int** times, int timesSize, int* timesColSize, int targetFrien
 
             // If it's the target friend, return the chair
             if (event.friendIdx == targetFriend) {
-                // Cleanup
                 free(friendToChair);
                 free(events);
                 free(availableChairs->array);
