@@ -19,28 +19,20 @@ class Solution:
         int: The maximum possible score after k operations.
         """
         
-        # Convert the list to a max-heap by negating all values (heapq is a min-heap by default)
+        # Negate all elements in nums to simulate a max-heap, because heapq in Python implements a min-heap.
         nums = [-num for num in nums]
         
-        # Heapify the negated list (O(n) operation to convert it to a heap)
+        # Convert the negated list into a heap (which will behave as a max-heap for the original values).
         heapq.heapify(nums)
         
-        score = 0  # Initialize score to 0
+        score = 0  # Initialize the score to 0.
         
         # Perform exactly k operations
         for _ in range(k):
-            # Pop the largest element (which is the smallest in the negated heap)
-            max_num = -heapq.heappop(nums)
-            
-            # Increase the score by the largest element
-            score += max_num
-            
-            # Compute the new value as ceil(max_num / 3)
-            new_value = ceil(max_num / 3)
-            
-            # Push the new value (negated) back into the heap to maintain the max-heap property
-            heapq.heappush(nums, -new_value)
+            # Push the element back after shrinking and pop the largest (negated smallest)
+            # heapq.heappushpop: Pushes the value (-floor(nums[0] / 3)) and pops the smallest value in one step.
+            # Since the heap contains negated values, we subtract the result of heappushpop to maintain the score.
+            score -= heapq.heappushpop(nums, floor(nums[0] / 3))
         
-        # Return the total score after k operations
+        # Return the total score after performing k operations.
         return score
-
