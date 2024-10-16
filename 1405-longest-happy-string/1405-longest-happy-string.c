@@ -11,7 +11,7 @@
  */
 
 char* longestDiverseString(int a, int b, int c) {
-    static char result[201];  // Maximum length is 100 a's + 100 b's + 100 c's = 300 + 1 for '\0'
+    static char result[301];  // Maximum length is 100 a's + 100 b's + 100 c's = 300 + 1 for '\0'
     int index = 0;
     
     // Run the loop while there are characters left to be used
