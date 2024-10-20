@@ -13,22 +13,38 @@
  */
 char** stringSequence(char* target, int* returnSize) {
     int targetLength = strlen(target);  // Length of the target string
-    
-    // We estimate a large enough array to hold all possible intermediate strings
-    // Worst case is we increment every character from 'a' to 'z' for every character in target.
-    char** result = (char**)malloc(400 * sizeof(char*));
-    
+
+    // Estimate a larger size, but you can also dynamically resize this if needed.
+    int maxResultSize = targetLength * 26;  // Max number of keypresses (26 letters)
+    char** result = (char**)malloc(maxResultSize * sizeof(char*));
+    if (result == NULL) {
+        return NULL;  // Return NULL if memory allocation fails
+    }
+
     char* str_on_screen = (char*)malloc((targetLength + 1) * sizeof(char));
+    if (str_on_screen == NULL) {
+        free(result);  // Clean up result array if memory allocation fails
+        return NULL;
+    }
     str_on_screen[0] = '\0';  // Start with an empty string
     
     int count = 0;  // Keep track of how many strings are generated
-    
+
     // Iterate through each character in the target
     for (int i = 0; i < targetLength; ++i) {
         // Step 1: Append 'a' (Key 1 action)
         str_on_screen[i] = 'a';
         str_on_screen[i + 1] = '\0';
         result[count] = (char*)malloc((i + 2) * sizeof(char));  // Allocate memory for the current string
+        if (result[count] == NULL) {
+            // If memory allocation fails, free everything allocated so far
+            for (int j = 0; j < count; j++) {
+                free(result[j]);
+            }
+            free(result);
+            free(str_on_screen);
+            return NULL;
+        }
         strcpy(result[count], str_on_screen);  // Copy the string into the result array
         count++;
         
@@ -36,6 +52,15 @@ char** stringSequence(char* target, int* returnSize) {
         while (str_on_screen[i] != target[i]) {
             str_on_screen[i] = str_on_screen[i] + 1;  // Increment character
             result[count] = (char*)malloc((i + 2) * sizeof(char));  // Allocate memory for the current string
+            if (result[count] == NULL) {
+                // If memory allocation fails, free everything allocated so far
+                for (int j = 0; j < count; j++) {
+                    free(result[j]);
+                }
+                free(result);
+                free(str_on_screen);
+                return NULL;
+            }
             strcpy(result[count], str_on_screen);  // Copy the string into the result array
             count++;
         }
@@ -43,7 +68,7 @@ char** stringSequence(char* target, int* returnSize) {
     
     // Set the returnSize to the number of strings generated
     *returnSize = count;
-    
+
     // Free the temporary string used to simulate the screen
     free(str_on_screen);
     
