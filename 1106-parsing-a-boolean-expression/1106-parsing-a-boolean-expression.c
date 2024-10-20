@@ -50,11 +50,9 @@ bool parseBoolExpr(char* expression) {
             // Push the result back onto the stack
             stack[++top] = result;
         }
-        else if (ch != ',' && ch != '(') {
-            // Push every character except commas and opening parenthesis '('
+        else if (ch != ',') {
+            // Push every character except commas
             stack[++top] = ch;
-        } else if (ch == '(') {
-            stack[++top] = ch;  // Push '(' as well
         }
     }
     
