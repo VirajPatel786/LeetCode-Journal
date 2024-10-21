@@ -17,10 +17,6 @@ class Solution:
             
             max_splits = 0
             
-            # Pruning: If the current count + remaining length is less than or equal to the current max_splits, stop exploring.
-            if len(seen) + len(s) - start <= max_splits:
-                return max_splits
-            
             # Try all possible substrings starting from index `start`
             for end in range(start + 1, len(s) + 1):
                 substring = s[start:end]
