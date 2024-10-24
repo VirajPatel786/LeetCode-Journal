@@ -2,7 +2,6 @@ class Solution:
     def generate(self, numRows: int) -> List[List[int]]:
         """
         Generate the first 'numRows' of Pascal's Triangle.
-        Optimized to generate each row in-place without recomputing the already-known values.
         
         Parameters:
         numRows (int): The number of rows of Pascal's Triangle to generate.
