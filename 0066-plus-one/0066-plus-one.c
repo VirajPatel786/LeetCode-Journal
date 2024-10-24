@@ -11,26 +11,27 @@
  *                 The array is dynamically allocated and must be freed by the caller.
  */
 int* plusOne(int* digits, int digitsSize, int* returnSize) {
-    // Step 1: Allocate memory for the result array (same size as the input initially)
-    int* result = (int*)malloc((digitsSize + 1) * sizeof(int));
-    int carry = 1;  // We need to add 1 to the number
-    
-    // Step 2: Traverse the array from the last digit to the first
+    // Traverse the list from the last digit (rightmost side)
     for (int i = digitsSize - 1; i >= 0; i--) {
-        int sum = digits[i] + carry;  // Add the carry to the current digit
-        result[i + 1] = sum % 10;     // Store the last digit of the sum
-        carry = sum / 10;             // Calculate the carry (1 if sum is 10, otherwise 0)
+        if (digits[i] < 9) {
+            // If the current digit is less than 9, just increment it and return the result
+            digits[i] += 1;
+            *returnSize = digitsSize;
+            return digits;  // Since no new space is needed, return the modified array directly
+        }
+        // If the digit is 9, it becomes 0 (carry over to the next significant digit)
+        digits[i] = 0;
     }
+
+    // If all digits were 9, we need an extra digit at the beginning (e.g., [9, 9, 9] -> [1, 0, 0, 0])
+    int* result = (int*)malloc((digitsSize + 1) * sizeof(int));
+    result[0] = 1;  // Set the first digit to 1 (carry from the previous digits)
     
-    // Step 3: If there is a carry left after the loop, we need to resize the array
-    if (carry == 1) {
-        // The most significant digit also needs to carry, so the array grows by one
-        result[0] = 1;
-        *returnSize = digitsSize + 1;
-        return result;
-    } else {
-        // No carry, just return the result starting from index 1 (skip the extra space at the front)
-        *returnSize = digitsSize;
-        return result + 1;  // Adjust the pointer to skip the extra space at the front
+    // The rest of the digits are all 0, which have already been set to 0 in the original array
+    for (int i = 1; i <= digitsSize; i++) {
+        result[i] = 0;
     }
+
+    *returnSize = digitsSize + 1;  // Update the return size to reflect the new length
+    return result;  // Return the new array
 }
