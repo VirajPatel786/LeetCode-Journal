@@ -7,114 +7,94 @@
  * };
  */
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 
-#define MAX_NODES 100005  // Define the maximum nodes limit
+#define LIM 100001  // Maximum limit for nodes in the binary tree, based on problem constraints
+#define MAX(a, b) ((a) > (b) ? (a) : (b))  // Macro to compute the maximum of two values
 
-// Global variables for depth, height, and max height data at each depth level
-int depth[MAX_NODES];  // Stores depth of each node
-int height[MAX_NODES];  // Stores height of the subtree rooted at each node
-int max_depth_with_removal[MAX_NODES][2];  // Stores top two heights at each depth level
-int max_tree_height = 0;  // Overall height of the tree
+typedef struct TreeNode TreeNode;
 
 /**
- * @brief Initializes global arrays before each run.
- */
-void initialize_globals() {
-    max_tree_height = 0;
-    for (int i = 0; i < MAX_NODES; i++) {
-        depth[i] = 0;
-        height[i] = 0;
-        max_depth_with_removal[i][0] = -1;
-        max_depth_with_removal[i][1] = -1;
-    }
-}
-
-/**
- * @brief Calculates the depth and height of each node in the tree.
+ * @brief Main function to compute tree heights after subtree removals for given queries.
  *
- * @param node (struct TreeNode*): Pointer to the current node.
- * @param d (int): Depth of the current node.
+ * This function first precomputes the heights and maximum achievable heights for each node
+ * in the binary tree using two DFS traversals, then processes each query to return the
+ * height of the tree after removing the specified subtree.
  *
- * @return int: The height of the subtree rooted at the current node.
- */
-int dfs(struct TreeNode* node, int d) {
-    if (!node) return -1;  // Base case: empty node has height -1
-    depth[node->val] = d;  // Store depth of the current node
-    // Recursively calculate height of left and right subtrees
-    int left_height = dfs(node->left, d + 1);
-    int right_height = dfs(node->right, d + 1);
-    // Height of the current node is 1 + max height of its children
-    height[node->val] = 1 + (left_height > right_height ? left_height : right_height);
-    // Update the overall max tree height
-    if (height[node->val] > max_tree_height) {
-        max_tree_height = height[node->val];
-    }
-    return height[node->val];
-}
-
-/**
- * @brief Adjusts max height data for each depth level.
- *
- * @param node (struct TreeNode*): Pointer to the current node.
- */
-void dfs_depth_levels(struct TreeNode* node) {
-    if (!node) return;
-    int h = height[node->val];  // Height of current subtree
-    int d = depth[node->val];  // Depth level of current node
-    // Update the two largest heights at this depth
-    if (h > max_depth_with_removal[d][0]) {  // Current height is the largest at this depth
-        max_depth_with_removal[d][1] = max_depth_with_removal[d][0];  // Move max to second max
-        max_depth_with_removal[d][0] = h;  // Set new max height
-    } else if (h > max_depth_with_removal[d][1]) {  // Current height is second largest
-        max_depth_with_removal[d][1] = h;  // Update second max height
-    }
-    // Recursive calls for left and right subtrees
-    dfs_depth_levels(node->left);
-    dfs_depth_levels(node->right);
-}
-
-/**
- * @brief Calculates the height of the tree after removing each specified subtree.
- *
- * This function first precomputes the depth and height of each node in the tree,
- * then processes each query to determine the height of the tree after removing
- * the subtree rooted at each queried node.
- *
- * @param root (struct TreeNode*): Pointer to the root node of the binary tree.
- * @param queries (int*): Array of queries representing nodes whose subtrees will be removed.
+ * @param root (TreeNode*): Pointer to the root node of the binary tree.
+ * @param queries (int*): Array of queries representing nodes to remove.
  * @param queriesSize (int): Number of queries in the `queries` array.
  * @param returnSize (int*): Pointer to an integer to store the size of the returned array.
  *
  * @return int*: Array of resulting tree heights after each subtree removal query.
  *               The caller is responsible for freeing this memory.
  */
-int* treeQueries(struct TreeNode* root, int* queries, int queriesSize, int* returnSize) {
-    *returnSize = queriesSize;  // Set return size to number of queries
-    int *result = (int *)malloc(queriesSize * sizeof(int));  // Allocate result array
+int* treeQueries(TreeNode* root, int* queries, int queriesSize, int* returnSize) {
+    // Set the return size to the number of queries
+    *returnSize = queriesSize;
+    int* answer = malloc(sizeof(int) * queriesSize);  // Array to store results
 
-    // Initialize global arrays before processing
-    initialize_globals();
+    // Arrays to store subtree heights and max heights after subtree removal
+    int heights[LIM] = {0};  // Heights of subtrees rooted at each node
+    int max_height_after_removal[LIM] = {0};  // Max achievable heights after subtree removal
 
-    // Step 1: Calculate depth and height for each node
-    dfs(root, 0);  // Initial DFS call to compute depth and height
-    
-    // Step 2: Calculate max heights per depth level ignoring each node
-    dfs_depth_levels(root);
-
-    // Step 3: Process each query to compute resulting tree heights
-    for (int i = 0; i < queriesSize; i++) {
-        int q = queries[i];  // Query node
-        int q_depth = depth[q];  // Depth of the queried node
-        int q_height = height[q];  // Height of the subtree rooted at the queried node
-        // If the queried height is the maximum at its depth, use the second maximum
-        if (max_depth_with_removal[q_depth][0] == q_height) {
-            result[i] = max_tree_height - q_height + max_depth_with_removal[q_depth][1];
-        } else {
-            result[i] = max_tree_height;  // No adjustment if not the max at its level
-        }
+    /**
+     * @brief Computes the height of each subtree in the binary tree.
+     *
+     * This recursive inline function calculates the height of each node's subtree and
+     * stores it in the `heights` array. The height of a node is defined as the maximum
+     * depth of its left or right subtree plus one.
+     *
+     * @param node (TreeNode*): Pointer to the current node in the binary tree.
+     *
+     * @return int: Height of the subtree rooted at the current node.
+     */
+    inline int calculate_heights(TreeNode* node) {
+        if (!node) return 0;  // Base case: empty node has height 0
+        // Recursively calculate the height of left and right subtrees
+        int left_height = calculate_heights(node->left);
+        int right_height = calculate_heights(node->right);
+        // Store the calculated height for the current node
+        heights[node->val] = MAX(left_height, right_height) + 1;
+        return heights[node->val];
     }
-    return result;  // Return the results array
+    calculate_heights(root);  // Initial call to calculate all heights
+
+    /**
+     * @brief Calculates the maximum tree height achievable after removing each subtree.
+     *
+     * This recursive inline DFS function calculates the maximum achievable height for the
+     * tree if the subtree rooted at each node is removed. It uses the precomputed heights
+     * of each subtree and stores the result in the `max_height_after_removal` array.
+     *
+     * @param node (TreeNode*): Pointer to the current node in the binary tree.
+     * @param current_depth (int): Depth of the current node from the root.
+     * @param current_max_height (int): Maximum height achievable from the root excluding
+     *                                  the current subtree.
+     */
+    inline void calculate_max_heights(TreeNode* node, int current_depth, int current_max_height) {
+        if (!node) return;  // Base case: no node to process
+
+        // Store the maximum height achievable if the subtree rooted at `node` is removed
+        max_height_after_removal[node->val] = current_max_height;
+
+        // Get heights of left and right subtrees, or zero if subtree is absent
+        int left_subtree_height = (node->left) ? heights[node->left->val] : 0;
+        int right_subtree_height = (node->right) ? heights[node->right->val] : 0;
+
+        // Calculate new max heights for left and right child nodes if subtree is removed
+        int max_height_if_left_removed = MAX(current_max_height, current_depth + 1 + right_subtree_height);
+        int max_height_if_right_removed = MAX(current_max_height, current_depth + 1 + left_subtree_height);
+
+        // Recursively process left and right children
+        calculate_max_heights(node->left, current_depth + 1, max_height_if_left_removed);
+        calculate_max_heights(node->right, current_depth + 1, max_height_if_right_removed);
+    }
+    calculate_max_heights(root, 0, 0);  // Initial call to calculate max heights
+
+    // Step 3: Process each query to get the result from precomputed values
+    for (int i = 0; i < queriesSize; i++) {
+        answer[i] = max_height_after_removal[queries[i]] - 1;  // Convert node height to edge count
+    }
+    return answer;
 }
