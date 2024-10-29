@@ -10,29 +10,46 @@ class Solution:
         grid (List[List[int]]): 2D list representing the grid of positive integers.
 
         Returns:
-        int: Maximum number of moves possible starting from any cell in the first column.
-        Returns 0 if no valid moves are possible.
+        int: The maximum number of moves possible from any cell in the first column,
+             or 0 if no valid moves are possible.
         """
-        m, n = len(grid), len(grid[0])  # Get dimensions of the grid
-        dp = [[-1] * n for _ in range(m)]  # Initialize DP table with -1 (indicating no moves made)
+        num_rows = len(grid)
+        num_cols = len(grid[0])
 
-        # Initialize the first column of DP table with 0 moves as starting points
-        for row in range(m):
-            dp[row][0] = 0  # Starting at each cell in the first column is allowed
+        # Track rows in the current column that can initiate moves
+        can_move_from_current_col = [True] * num_rows
+        # Track rows in the next column that are reachable from the current column
+        can_move_to_next_col = [False] * num_rows
 
-        # Fill DP table column by column, starting from the second column
-        for col in range(1, n):
-            for row in range(m):
-                # Check possible moves from neighboring cells in the previous column
-                for d_row in [-1, 0, 1]:  # Row offsets: -1 (up), 0 (straight), 1 (down)
-                    prev_row = row + d_row  # Calculate row index of the previous cell
-                    # Check if previous cell is within bounds and has a lower value
-                    if 0 <= prev_row < m and grid[prev_row][col - 1] < grid[row][col]:
-                        # Update dp[row][col] to reflect max moves from a valid previous cell
-                        dp[row][col] = max(dp[row][col], dp[prev_row][col - 1] + 1)
+        # Iterate through each column up to the second last (we are moving rightward)
+        for col_idx in range(num_cols - 1):
+            # Check each row in the current column for possible moves
+            for row_idx in range(num_rows):
 
-        # Extract the maximum number of moves possible from the last column in DP table
-        max_moves = max((dp[row][n - 1] for row in range(m)), default=0)
+                # Skip this row if no moves can be made from it in the current column
+                if not can_move_from_current_col[row_idx]:
+                    continue
 
-        # Return max moves, or 0 if no valid moves exist (if all are still -1)
-        return max_moves if max_moves != -1 else 0
+                # Check and mark moves from the current cell to the next column
+                # Up-right move (only if there is a row above)
+                if row_idx > 0:
+                    can_move_to_next_col[row_idx - 1] |= grid[row_idx - 1][col_idx + 1] > grid[row_idx][col_idx]
+                
+                # Rightward move to the same row
+                can_move_to_next_col[row_idx] |= grid[row_idx][col_idx + 1] > grid[row_idx][col_idx]
+                
+                # Down-right move (only if there is a row below)
+                if row_idx + 1 < num_rows:
+                    can_move_to_next_col[row_idx + 1] |= grid[row_idx + 1][col_idx + 1] > grid[row_idx][col_idx]
+
+            # If no moves are possible to any row in the next column, return the current column index
+            if not any(can_move_to_next_col):
+                return col_idx
+
+            # Update current column tracking with next column's move possibilities
+            can_move_from_current_col = can_move_to_next_col
+            # Reset next column tracking for the next iteration
+            can_move_to_next_col = [False] * num_rows
+
+        # If we've iterated through all columns, check if any moves were possible in the last column
+        return col_idx + 1 if any(can_move_from_current_col) else col_idx
