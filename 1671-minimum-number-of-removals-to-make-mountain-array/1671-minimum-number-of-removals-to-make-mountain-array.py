@@ -1,3 +1,5 @@
+from bisect import bisect_left
+
 class Solution:
     def minimumMountainRemovals(self, nums: list[int]) -> int:
         """
@@ -9,34 +11,40 @@ class Solution:
         Returns:
         int: Minimum number of elements to remove to form a mountain array.
         """
-        
         n = len(nums)
         
-        # Initialize left_inc array to store the length of the longest increasing subsequence
-        # ending at each index
-        left_inc = [1] * n
-        for i in range(1, n):
-            for j in range(i):
-                # If nums[i] can extend the increasing subsequence ending at nums[j]
-                if nums[i] > nums[j]:
-                    left_inc[i] = max(left_inc[i], left_inc[j] + 1)
+        # Step 1: Compute longest increasing subsequence (LIS) ending at each index
+        lis_length = [0] * n  # lis_length[i] will store the LIS ending at index i
+        lis_seq = []          # Auxiliary list for binary search based LIS
         
-        # Initialize right_dec array to store the length of the longest decreasing subsequence
-        # starting at each index
-        right_dec = [1] * n
-        for i in range(n - 2, -1, -1):
-            for j in range(i + 1, n):
-                # If nums[i] can extend the decreasing subsequence starting at nums[j]
-                if nums[i] > nums[j]:
-                    right_dec[i] = max(right_dec[i], right_dec[j] + 1)
+        for i in range(n):
+            pos = bisect_left(lis_seq, nums[i])
+            if pos == len(lis_seq):
+                lis_seq.append(nums[i])  # Extend the sequence
+            else:
+                lis_seq[pos] = nums[i]   # Replace the element at pos
+            lis_length[i] = pos + 1      # Length of LIS ending at index i
+
+        # Step 2: Compute longest decreasing subsequence (LDS) starting at each index
+        lds_length = [0] * n  # lds_length[i] will store the LDS starting at index i
+        lds_seq = []          # Auxiliary list for binary search based LDS
         
-        # Initialize max_mountain to track the length of the longest valid mountain subarray
-        max_mountain = 0
+        for i in range(n - 1, -1, -1):
+            pos = bisect_left(lds_seq, nums[i])
+            if pos == len(lds_seq):
+                lds_seq.append(nums[i])  # Extend the sequence
+            else:
+                lds_seq[pos] = nums[i]   # Replace the element at pos
+            lds_length[i] = pos + 1      # Length of LDS starting at index i
+
+        # Step 3: Find the maximum length of a mountain array
+        max_mountain_length = 0
         for i in range(1, n - 1):
-            # Only consider indexes that can be the peak of a mountain
-            if left_inc[i] > 1 and right_dec[i] > 1:
-                # Calculate the mountain length at index i and update max_mountain
-                max_mountain = max(max_mountain, left_inc[i] + right_dec[i] - 1)
-        
-        # Minimum removals is total elements minus the length of the longest mountain
-        return n - max_mountain
+            # A valid peak must have both an increasing sequence on the left and a decreasing on the right
+            if lis_length[i] > 1 and lds_length[i] > 1:
+                # Calculate mountain length centered at i and update max length
+                mountain_length = lis_length[i] + lds_length[i] - 1
+                max_mountain_length = max(max_mountain_length, mountain_length)
+
+        # Step 4: Calculate minimum removals
+        return n - max_mountain_length
